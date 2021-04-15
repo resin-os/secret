@@ -8,14 +8,14 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/balena-io/leviathan.git"
+    "url": "git+https://github.com/balena-os/leviathan.git"
   },
   "author": "Theodor Gherzan <theodor@balena.io>",
   "license": "Apache-2.0",
   "bugs": {
-    "url": "https://github.com/balena-io/leviathan/issues"
+    "url": "https://github.com/balena-os/leviathan/issues"
   },
-  "homepage": "https://github.com/balena-io/leviathan",
+  "homepage": "https://github.com/balena-os/leviathan",
   "private": true,
   "devDependencies": {
     "eslint": "^6.8.0",

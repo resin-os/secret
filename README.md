@@ -1,11 +1,11 @@
 # Leviathan
 
-[![GitHub Issues](https://img.shields.io/github/issues/balena-io/leviathan.svg)](https://github.com/balena-io/leviathan/issues)
-[![GitHub pull requests](https://img.shields.io/github/issues-pr/balena-io/leviathan.svg)](https://github.com/balena-io/leviathan/pulls)
+[![GitHub Issues](https://img.shields.io/github/issues/balena-os/leviathan.svg)](https://github.com/balena-os/leviathan/issues)
+[![GitHub pull requests](https://img.shields.io/github/issues-pr/balena-os/leviathan.svg)](https://github.com/balena-os/leviathan/pulls)
 [![node](https://img.shields.io/badge/node-v9.0.0-green.svg)](https://nodejs.org/download/release/v9.0.0/)
 [![License](https://img.shields.io/badge/license-APACHE%202.0-blue.svg)](https://opensource.org/licenses/Apache-2.0)
 
-> A distributed testing framework 
+> A distributed "remote" testing framework 
 
 ## Getting Started
 
@@ -20,7 +20,6 @@ To set up Leviathan both hardware and software need to be configured. If you are
 
 ### Prerequisites needed
 
-- Install node and npm in your system. We recommend installing [LTS versions from NVM](https://github.com/nvm-sh/nvm#install--update-script).
 - Download the image you want to test on your DUT from [balena.io/os](balena.io/os)
 
 
@@ -32,57 +31,19 @@ To set up Leviathan both hardware and software need to be configured. If you are
 - Extract the image, rename it to balena.img, and recompress the image into the `.gz` format. The final file would look like `balena.img.gz` file and has to be in the `./leviathan/workspace` directory. 
 
 
-### Packages needed for installation
+### Run first tests 
 
-(Taken from `Dockerfile.template` of each service, so might be incomplete or properly overkill)
-
-1. Install OS packages
-
-```
-sudo apt-get install qemu-kvm pkg-config libvirt-daemon-system bridge-utils libvirt-clients build-essential g++ python git make gcc gcc-multilib node-gyp libusb-dev libdbus-1-dev libvirt-dev qemu-system-x86
-```
-
-2. Install NPM packages
-
-```
-npm install node-pre-gyp node-gyp -g
-npm install
-```
-
-Make sure the `npm install` goes without errors (other than the optional dependencies), as it recursively installs packages for all 3 services. If it fails, you can follow the commands below for troubleshooting. 
-
-
-3. Run the tests by navigating to the workspace directory and running 
+Navigate to the `workspace` directory and run 
 
 ```
 ./run-tests.sh
 ```
 
-## Helpful commands for troubleshooting
+For more instruction on getting started with Leviathan Testing, refer to the [getting started](./documentation/Getting-started.md) guide. 
 
-At times, when `npm install` leads to errors. Use the commands below before trying again to start with a clean slate.
+## [rig-owners] Deployment Instructions  
 
-```
-rm core/package-lock.json worker/package-lock.json client/package-lock.json package-lock.json
-rm -rf node_modules/ core/node_modules/ worker/node_modules/ client/node_modules/
-rm -rf ~/.node-gyp
-npm cache clear --force
-```
-
-## [Not Needed] Instructions for rig-owners 
-
-- If you are pushing new releases of Leviathan to balenaCloud, then place the `.npmrc` file over with NPM token at the location `leviathan/.balena/secrets/.npmrc`
-- Next, create a [build time only secret file](https://www.balena.io/docs/learn/deploy/deployment/#build-time-secrets-and-variables), `.balena.yml` will be needed. Create a `balena.yml` in the `.balena` directory with the following configuration. 
-
-```
-build-secrets:
-  services:
-    worker:
-      - source: .npmrc
-        dest: .npmrc
-```
-
-**To push a new release to balenaCloud**
+**To push a new release to balenaCloud application**
 
 - Run the command with the <appname> as the name of your application.
 
@@ -98,13 +59,13 @@ If you're having any problem, please [raise an issue][newissue] on GitHub and th
 
 ## Contribute
 
-- Issue Tracker: [github.com/balena-io/leviathan/issues][issues]
-- Source Code: [github.com/balena-io/leviathan][source]
+- Issue Tracker: [github.com/balena-os/leviathan/issues][issues]
+- Source Code: [github.com/balena-os/leviathan][source]
 
 ## License
 
 The project is licensed under the Apache 2.0 license.
 
-[issues]: https://github.com/balena-io/leviathan/issues
-[newissue]: https://github.com/balena-io/leviathan/issues/new
-[source]: https://github.com/balena-io/leviathan
+[issues]: https://github.com/balena-os/leviathan/issues
+[newissue]: https://github.com/balena-os/leviathan/issues/new
+[source]: https://github.com/balena-os/leviathan
