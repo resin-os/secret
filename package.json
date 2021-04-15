@@ -1,6 +1,6 @@
 {
   "name": "leviathan",
-  "version": "1.26.12",
+  "version": "1.27.0",
   "scripts": {
     "prettify": "for component in 'suites' 'worker' 'core' 'client'; do npm --prefix $component run prettify; done",
     "lint": "for component in 'suites' 'worker' 'core' 'client'; do npm --prefix $component run lint; done",
