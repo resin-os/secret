@@ -25,7 +25,6 @@
 		"mz": "^2.7.0",
 		"node-ssh": "^5.1.2",
 		"npm": "^6.14.6",
-		"pensieve-sdk": "^1.0.0",
 		"request": "^2.88.0",
 		"request-promise": "^4.2.4",
 		"resin-image-fs": "^5.0.8",

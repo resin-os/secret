@@ -27,7 +27,7 @@ module.exports = {
 
 - Run the `run-tests.sh` script from `workspace` directory and watch the logs. You should get a report about executing the OS testing suite on your DUT.
 
-```shell script
+```shell
 ./run-tests.sh
 ```
 
@@ -308,4 +308,3 @@ Usually, this will include:
 - flashing the DUT (using `Worker.flash()`)
 - Checking that the device is online
 - listing the tests
-
