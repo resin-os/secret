@@ -166,7 +166,7 @@ module.exports = class BalenaOS {
 					zlib.createGunzip(),
 					fs.createWriteStream(this.image.path),
 				);
-			}
+			},
 		};
 
 		return types[download.type]();

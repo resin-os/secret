@@ -18,20 +18,20 @@
   "homepage": "https://github.com/balena-io/leviathan",
   "private": true,
   "devDependencies": {
+    "@balena/lint": "^5.4.1",
     "eslint": "^6.8.0",
-    "eslint-config-prettier": "^6.9.0",
-    "eslint-config-standard": "^14.1.0",
-    "eslint-plugin-import": "^2.19.1",
-    "eslint-plugin-jsdoc": "^20.0.5",
+    "eslint-config-prettier": "^6.15.0",
+    "eslint-config-standard": "^14.1.1",
+    "eslint-plugin-import": "^2.22.1",
+    "eslint-plugin-jsdoc": "^20.4.0",
     "eslint-plugin-lodash": "^6.0.0",
-    "eslint-plugin-node": "^11.0.0",
-    "eslint-plugin-prettier": "^3.1.2",
-    "eslint-plugin-promise": "^4.2.1",
-    "eslint-plugin-standard": "^4.0.1",
+    "eslint-plugin-node": "^11.1.0",
+    "eslint-plugin-prettier": "^3.4.0",
+    "eslint-plugin-promise": "^4.3.1",
+    "eslint-plugin-standard": "^4.1.0",
     "husky": "^1.3.1",
     "lint-staged": "^8.2.1",
-    "prettier": "^1.16.4",
-    "resin-lint": "^3.1.1"
+    "prettier": "^1.16.4"
   },
   "husky": {
     "hooks": {
