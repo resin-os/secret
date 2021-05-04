@@ -42,7 +42,7 @@ module.exports = class Worker {
 	async flash(imagePath) {
 		this.logger.log('Preparing to flash');
 
-		await new Promise(async (resolve, reject) => {
+		await new Promise((resolve, reject) => {
 			const req = rp.post({ uri: `${this.url}/dut/flash` });
 
 			req.catch(error => {
@@ -160,7 +160,7 @@ module.exports = class Worker {
 			tries: 10,
 		},
 	) {
-		let ip = /.*\.local/.test(target) ? await this.ip(target) : target;
+		const ip = /.*\.local/.test(target) ? await this.ip(target) : target;
 
 		return retry(
 			async () => {
@@ -189,8 +189,8 @@ module.exports = class Worker {
 		);
 	}
 
-	async pushContainerToDUT(target, source, containerName){
-		// use cli to push container 
+	async pushContainerToDUT(target, source, containerName) {
+		// use cli to push container
 		await retry(
 			async () => {
 				await exec(
@@ -219,11 +219,11 @@ module.exports = class Worker {
 			uri: `http://${target}:48484/v2/containerId`,
 			json: true,
 		});
-		
-		return state
+
+		return state;
 	}
 
-	async executeCommandInContainer(command, containerName, target){
+	async executeCommandInContainer(command, containerName, target) {
 		// get container ID
 		const state = await rp({
 			method: 'GET',
@@ -232,10 +232,9 @@ module.exports = class Worker {
 		});
 
 		const stdout = await this.executeCommandInHostOS(
-				`balena exec ${state.services[containerName]} ${command}`,
-				target,
+			`balena exec ${state.services[containerName]} ${command}`,
+			target,
 		);
 		return stdout;
 	}
-
 };
