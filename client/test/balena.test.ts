@@ -36,7 +36,7 @@ describe('DeviceInfo', () => {
 		DUT: 'raspberrypi3',
 		model: 'RPi0, wireless',
 		other: 'data',
-	});
+	}, null);
 
 	it('generates a file name prefix', () => {
 		expect(device.fileNamePrefix()).toStrictEqual('raspberrypi3-RPi0_wireless');

@@ -1,0 +1,8 @@
+{
+    "out": "documentation",
+    "name": "Client Documentation",
+    "entryPoints": ["./lib", "./bin", "./test"],
+    "tsconfig": "./tsconfig.json",
+    "highlightTheme": "github-dark",
+    "excludeExternals": true
+}

@@ -1,5 +1,6 @@
 import { BalenaSDK, DeviceTag } from 'balena-sdk';
-
+import rp = require('request-promise');
+import { NonInteractiveState, State } from '../bin/multi-client'
 /**
  * Contains information about the workers with tags that they have 
  */
@@ -7,8 +8,9 @@ export class DeviceInfo {
 	constructor(
 		public readonly deviceId: number,
 		public readonly tags: { [key: string]: string },
+		public currentStatus: string | null,
 	) { }
-	
+
 
 	/**
 	 * @returns unique worker prefix by joining values of DUT and model tag. Example: `raspberrypi3-64-RPi3_A`	
@@ -28,9 +30,10 @@ export function groupTagsData(allAppTags: DeviceTag[]): DeviceInfo[] {
 	const value: DeviceInfo[] = [];
 	return allAppTags.reduce((res, tagData) => {
 		const deviceId = (tagData.device as any).__id;
+		let currentStatus = null
 		let data = res.find(info => info.deviceId === deviceId);
 		if (data == null) {
-			data = new DeviceInfo(deviceId, {});
+			data = new DeviceInfo(deviceId, {}, currentStatus);
 			value.push(data);
 		}
 		data.tags[tagData.tag_key] = tagData.value;
@@ -42,6 +45,7 @@ export function groupTagsData(allAppTags: DeviceTag[]): DeviceInfo[] {
  * Interacts with balenaCloud for the client
  */
 export class BalenaCloudInteractor {
+	errorCounter: number;
 	constructor(private sdk: BalenaSDK) { }
 	/**
 	 * Authenticate balenaSDK with API key
@@ -83,7 +87,18 @@ export class BalenaCloudInteractor {
 	/**
 	 * @returns device's public URL
 	 */
-	async resolveDeviceUrl(device: DeviceInfo): Promise<string> {
+	async resolveDeviceUrl(device: DeviceInfo): Promise<string>  {
 		return this.sdk.models.device.getDeviceUrl(device.deviceId);
+	}
+
+	async checkTestbotStatus(deviceUrl: string, state: NonInteractiveState | State): Promise<string | undefined> {
+		try {
+			return await rp.get(`${deviceUrl}/state`);
+		} catch (error) {
+			this.errorCounter++
+			if (this.errorCounter > 10000) {
+				state.warn(`Error when reaching for ${deviceUrl}/state :=> \n ${error}`)
+			}
+		}
 	}
 }

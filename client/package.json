@@ -44,6 +44,7 @@
 		"@babel/preset-env": "^7.6.0",
 		"@balena/lint": "^5.1.0",
 		"@types/jest": "^26.0.7",
+		"@types/request-promise": "^4.1.47",
 		"eslint": "^4.19.1",
 		"eslint-config-prettier": "^4.0.0",
 		"eslint-config-standard": "^11.0.0",

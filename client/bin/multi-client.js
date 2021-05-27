@@ -14,7 +14,7 @@ const { ensureDir } = require('fs-extra');
 const { fs } = require('mz');
 const nativeFs = require('fs');
 const request = require('request');
-const rp = require('request-promise');
+
 const schema = require('../lib/schemas/multi-client-config.js');
 const { once, every, map } = require('lodash');
 const { tmpdir } = require('os');
@@ -54,7 +54,7 @@ const yargs = require('yargs')
 	.help('help')
 	.showHelpOnFail(false, 'Something went wrong! run with --help').argv;
 
-class NonInteractiveState {
+export class NonInteractiveState {
 	constructor() {
 		this.workersData = {};
 	}
@@ -63,10 +63,21 @@ class NonInteractiveState {
 		console.log(`INFO: ${data.toString()}`);
 	}
 
+	warn(data) {
+		console.error(`ERROR: ${data.toString()}`);
+	}
+
 	logForWorker(workerId, data) {
 		const str = data.toString().trimEnd();
 		console.log(`[${workerId}] ${str}`);
 		this.workersData[workerId].workerLog.write(`${str}\n`, 'utf8');
+		this.workersData[workerId].workerWarnings.write(`${str}\n`, 'utf8');
+	}
+
+	logForWarnings(workerId, data) {
+		const str = data.toString().trimEnd();
+		// console.log(`[${workerId}] ${str}`);
+		this.workersData[workerId].workerWarnings.write(`${str}\n`, 'utf8');
 	}
 
 	attachPanel(elem) {
@@ -90,6 +101,7 @@ class NonInteractiveState {
 		}
 		this.workersData[workerId] = {
 			workerLog: nativeFs.createWriteStream(`reports/worker-${prefix}.log`),
+			workerWarnings: nativeFs.createWriteStream(`reports/warnings-${prefix}.log`),
 			workerUrl,
 			prefix,
 		};
@@ -113,6 +125,11 @@ class NonInteractiveState {
 			lastStatusPercentage = 0;
 			this.logForWorker(workerId, data);
 		};
+		elem.warn = data => {
+			lastStatusPercentage = 0;
+			this.logForWarnings(workerId, `ERROR: ${data}`);
+		}
+
 		elem.teardown = () => this.teardownForWorker(workerId);
 	}
 
@@ -135,7 +152,7 @@ class NonInteractiveState {
 		const downloadLog = request
 			.get(dutLogUrl)
 			.pipe(nativeFs.createWriteStream(`reports/dut-serial-${workerData.prefix}.log`));
-		let downloadLogDone =  new Promise(resolve =>
+		let downloadLogDone = new Promise(resolve =>
 			downloadLog.on('end', resolve).on('error', resolve),
 		);
 		const dutArtifactUrl = `${workerData.workerUrl}/artifacts`;
@@ -143,7 +160,7 @@ class NonInteractiveState {
 		const downloadImages = request
 			.get(dutArtifactUrl)
 			.pipe(nativeFs.createWriteStream(`reports/artifacts-${workerData.prefix}.tar.gz`));
-		let downloadArtifactDone =  new Promise(resolve =>
+		let downloadArtifactDone = new Promise(resolve =>
 			downloadImages.on('end', resolve).on('error', resolve),
 		);
 
@@ -161,7 +178,7 @@ class NonInteractiveState {
 	}
 }
 
-class State {
+export class State {
 	constructor() {
 		if (process.stdout.isTTY !== true) {
 			throw new Error('The multi client requires a tty environmet to run in');
@@ -214,6 +231,11 @@ class State {
 
 	info(data) {
 		this.blessed.main.info.setContent(` ${data.toString()}`);
+		this.blessed.screen.render();
+	}
+
+	warn(data) {
+		this.blessed.main.info.setContent(`WARN: ${data.toString()}`);
 		this.blessed.screen.render();
 	}
 
@@ -446,6 +468,7 @@ class State {
 		}
 
 		state.info(`[Running Queue] Suites currently in queue: ${runQueue.map((run) => path.parse(run.suite).base)}`);
+		state.info("[Still Running] Checking for available workers")
 		const busyWorkers = []
 		// While jobs are present the runQueue
 		while (runQueue.length > 0) {
@@ -455,91 +478,94 @@ class State {
 				for (var device of job.matchingDevices) {
 					// check if device is idle & public URL is reachable
 					let deviceUrl = await balenaCloud.resolveDeviceUrl(device)
-					let state = await rp.get(`${(url.parse(deviceUrl)).href}/state`);
-					if (state === "IDLE") {
-						// make sure that the worker being targetted isn't already about to be used by another child process
-						if(!busyWorkers.includes(deviceUrl)){
-							// Create single client and break from loop to job the job 👍
-							job.workers = deviceUrl
-							job.workerPrefix = device.fileNamePrefix()
-							break
-						}
+					let status = await balenaCloud.checkTestbotStatus(deviceUrl, state)
+					if (device.currentStatus == null) {
+						device.currentStatus = status
+					}
+					// make sure that the worker being targetted isn't already about to be used by another child process
+					if (status === "IDLE" && device.currentStatus === "IDLE") {
+						// Create single client and break from loop to job the job 👍
+						job.workers = deviceUrl
+						job.workerPrefix = device.fileNamePrefix()
+					}
+
+					if (job.workers === null) {
+						// No idle workers currently - the job is pushed to the back of the queue
+						runQueue.unshift(job)
+						// Waiting for 25 seconds to look for available workers again
+						await require('bluebird').delay(25000)
+					} else {
+						// Start the job on the assigned worker
+						state.attachPanel(job)
+						const child = fork(
+							path.join(__dirname, 'single-client'),
+							[
+								'-d',
+								job.deviceType,
+								'-i',
+								job.image,
+								'-c',
+								job.config instanceof Object
+									? JSON.stringify(job.config)
+									: job.config,
+								'-s',
+								job.suite,
+								'-u',
+								job.workers,
+							],
+							{
+								stdio: 'pipe',
+								env: {
+									CI: true,
+								},
+							},
+						);
+
+						// after creating child process, add the worker to the busy workers array
+						// let assignedTestbot = job.matchingDevices.find(device => device.workers === deviceUrl)
+						device.currentStatus = "BUSY"
+
+						// child state
+						children[child.pid] = {
+							_child: child,
+							outputPath: `${yargs.workdir}/${new url.URL(job.workers).hostname ||
+								child.pid}.out`,
+							exitCode: 1,
+						};
+
+						child.on('message', ({ type, data }) => {
+							switch (type) {
+								case 'log':
+									job.log(data);
+									break;
+								case 'status':
+									job.status(data);
+									break;
+								case 'info':
+									job.info(data);
+									break;
+								case 'error':
+									job.log(data.message);
+									break;
+							}
+						});
+
+						child.on('error', console.error);
+						child.stdout.on('data', job.log);
+						child.stderr.on('data', job.log);
+
+						job.info(`WORKER URL: ${job.workers}`);
+
+						child.on('exit', code => {
+							children[child.pid].code = code;
+							if (job.teardown) {
+								job.teardown();
+							}
+							// remove the worker from the busy array once the job is finished
+							device.currentStatus = "IDLE"
+						});
 					}
 				}
-			}
-
-			if (job.workers === null) {
-				// No idle workers currently - the job is pushed to the back of the queue
-				runQueue.unshift(job)
-			} else {
-				// Start the job on the assigned worker
-				state.attachPanel(job)
-				const child = fork(
-					path.join(__dirname, 'single-client'),
-					[
-						'-d',
-						job.deviceType,
-						'-i',
-						job.image,
-						'-c',
-						job.config instanceof Object
-							? JSON.stringify(job.config)
-							: job.config,
-						'-s',
-						job.suite,
-						'-u',
-						job.workers,
-					],
-					{
-						stdio: 'pipe',
-						env: {
-							CI: true,
-						},
-					},
-				);
-
-				// after creating child process, add the worker to the busy workers array
-				busyWorkers.push(job.workers)
-
-				// child state
-				children[child.pid] = {
-					_child: child,
-					outputPath: `${yargs.workdir}/${new url.URL(job.workers).hostname ||
-						child.pid}.out`,
-					exitCode: 1,
-				};
-
-				child.on('message', ({ type, data }) => {
-					switch (type) {
-						case 'log':
-							job.log(data);
-							break;
-						case 'status':
-							job.status(data);
-							break;
-						case 'info':
-							job.info(data);
-							break;
-						case 'error':
-							job.log(data.message);
-							break;
-					}
-				});
-
-				child.on('error', console.error);
-				child.stdout.on('data', job.log);
-				child.stderr.on('data', job.log);
-
-				job.info(`WORKER URL: ${job.workers}`);
-
-				child.on('exit', code => {
-					children[child.pid].code = code;
-					if (job.teardown) {
-						job.teardown();
-					}
-					// remove the worker from the busy array once the job is finished
-					busyWorkers.splice(busyWorkers.indexOf(job.workers));
-				});
 			}
 		}
 	} catch (e) {
