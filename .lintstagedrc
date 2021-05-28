@@ -14,7 +14,7 @@
 	],
 
 	"@(suites|core)/**/*.js": [
-		"prettier --config ./node_modules/resin-lint/config/.prettierrc --write",
+		"prettier --config ./node_modules/@balena/lint/config/.prettierrc --write",
 		"eslint",
 		"git add"
 	]
