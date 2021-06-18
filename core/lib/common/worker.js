@@ -233,4 +233,35 @@ module.exports = class Worker {
 		return stdout;
 	}
 
+	async pushFileToDUT(localPath, remotePath, target, sshKeyPath) {
+		this.logger.log(`Sending ${localPath} to DUT`);
+		const config = {
+			host: await this.ip(target),
+			port: '22222',
+			username: 'root',
+			identity: sshKeyPath,
+		};
+		return new Promise((resolve, reject) => {
+			const p = require('child_process').spawn('scp', [
+				'-B',
+				'-P', `${config.port}`,
+				'-o', `User=${config.username}`,
+				"-o", `Compression=yes`,
+				'-o', `StrictHostKeyChecking=no`,
+				'-o', `UserKnownHostsFile=/dev/null`,
+				`${localPath}`,
+				`${config.host}:${remotePath}`,
+			], {
+				stdio: 'ignore',
+			});
+			p.on('error', reject);
+			p.on('exit', (code, signal) => {
+				if (code !== 0) {
+					reject(new Error(`Process exited with exit code ${code}: ${p.stdout}`))
+				} else {
+					resolve(remotePath)
+				}
+			});
+		});
+	}
 };
