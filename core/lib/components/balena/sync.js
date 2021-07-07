@@ -1,3 +1,9 @@
+/**
+ * Utility helpers involve something loren ipsum
+ *
+ * @module Sync helper
+ */
+
 /*
  * Copyright 2018 balena
  *

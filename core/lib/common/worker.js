@@ -1,3 +1,20 @@
+/**
+ * The worker class can be used to control the testbot hardware. In the `suite.js` file, you can
+ * create an instance of it, and then use its methods to flash the DUT, power it on/off, and set up a
+ * network AP for the DUT to connect to.
+ *
+ * @example
+ * ```js
+ *  const Worker = this.require('common/worker');
+ *  this.suite.context.set({
+ *      worker: new Worker(DEVICE_TYPE_SLUG, this.getLogger()), // Add an instance of worker to the context
+ *  });
+ *  const Worker = this.require('common/worker');
+ *  const worker = new Worker(DEVICE_TYPE_SLUG, this.getLogger())
+ * ```
+ * @module Leviathan Worker helpers
+ */
+
 /*
  * Copyright 2018 balena
  *
@@ -37,6 +54,10 @@ module.exports = class Worker {
 		this.logger = logger;
 	}
 
+	/**
+	 *
+	 * @param {*} imagePath
+	 */
 	async flash(imagePath) {
 		this.logger.log('Preparing to flash');
 
@@ -89,17 +110,26 @@ module.exports = class Worker {
 		this.logger.log('Flash completed');
 	}
 
+	/**
+	 * Turn the DUT on
+	 */
 	async on() {
 		this.logger.log('Powering on DUT');
 		await rp.post(`${this.url}/dut/on`);
 		this.logger.log('DUT powered on');
 	}
 
+	/**
+	 * Turn the DUT off
+	 */
 	async off() {
 		this.logger.log('Powering off DUT');
 		await rp.post(`${this.url}/dut/off`);
 	}
 
+	/**
+	 * @internal
+	 */
 	async network(network) {
 		await rp.post({
 			uri: `${this.url}/dut/network`,
@@ -150,6 +180,16 @@ module.exports = class Worker {
 		}
 	}
 
+	/**
+	 * Another helpful method of the worker is `executeCommandInHostOs`, which lets you execute command line
+	 * operations in the host OS of the DUT. Assuming that the DUT is connected to the AP of the testbot:
+	 *
+	 * ```js
+	 * const Worker = this.require('common/worker');
+	 * const worker = new Worker(DEVICE_TYPE_SLUG, this.getLogger())
+	 * await worker.executeCommandInHostOS('cat /etc/hostname', `${UUID}.local`);
+	 * ```
+	 */
 	async executeCommandInHostOS(
 		command,
 		target,
@@ -187,8 +227,15 @@ module.exports = class Worker {
 		);
 	}
 
-	async pushContainerToDUT(target, source, containerName){
-		// use cli to push container
+	/**
+	 * Use cli to push container
+	 *
+	 * @param {*} target
+	 * @param {*} source
+	 * @param {*} containerName
+	 * @returns
+	 */
+	async pushContainerToDUT(target, source, containerName) {
 		await retry(
 			async () => {
 				await exec(
@@ -200,7 +247,6 @@ module.exports = class Worker {
 				interval: 5000,
 			},
 		);
-
 		// now wait for new container to be available
 		let state = {};
 		await utils.waitUntil(async () => {
@@ -213,10 +259,17 @@ module.exports = class Worker {
 			return state.services[containerName] != null;
 		}, false);
 
-		return state
+		return state;
 	}
 
-	async executeCommandInContainer(command, containerName, target){
+	/**
+	 *
+	 * @param {*} command
+	 * @param {*} containerName
+	 * @param {*} target
+	 * @returns
+	 */
+	async executeCommandInContainer(command, containerName, target) {
 		// get container ID
 		const state = await rp({
 			method: 'GET',
@@ -225,13 +278,17 @@ module.exports = class Worker {
 		});
 
 		const stdout = await this.executeCommandInHostOS(
-				`balena exec ${state.services[containerName]} ${command}`,
-				target,
+			`balena exec ${state.services[containerName]} ${command}`,
+			target,
 		);
 		return stdout;
 	}
 
-	async rebootDut (target) {
+	/**
+	 *
+	 * @param {*} target
+	 */
+	async rebootDut(target) {
 		this.logger.log(`Rebooting the DUT`);
 		await this.executeCommandInHostOS(
 			`touch /tmp/reboot-check && systemd-run --on-active=2 reboot`,
@@ -246,25 +303,28 @@ module.exports = class Worker {
 			);
 		}, false);
 		this.logger.log(`DUT has rebooted & is back online`);
-	};
+	}
 
-	async getOSVersion(target){
+	/**
+	 *
+	 * @param {*} target
+	 * @returns
+	 */
+	async getOSVersion(target) {
 		// maybe https://github.com/balena-io/leviathan/blob/master/core/lib/components/balena/sdk.js#L210
 		// will do? that one works entirely on the device though...
 		const output = await this.executeCommandInHostOS(
-			"cat /etc/os-release",
-			target
-		  );
+			'cat /etc/os-release',
+			target,
+		);
 		let match;
-		output
-		  .split("\n")
-		  .every(x => {
-			if (x.startsWith("VERSION=")) {
-			  match = x.split("=")[1];
-			  return false;
+		output.split('\n').every(x => {
+			if (x.startsWith('VERSION=')) {
+				match = x.split('=')[1];
+				return false;
 			}
 			return true;
-		  })
+		});
 		return match.replace(/"/g, '');
-	  }
+	}
 };

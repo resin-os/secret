@@ -1,3 +1,9 @@
+/**
+ * balenaOS helpers involve something loren ipsum
+ *
+ * @module Test
+ */
+
 /*
  * Copyright 2018 balena
  *

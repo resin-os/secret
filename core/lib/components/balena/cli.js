@@ -1,3 +1,8 @@
+/**
+ * balenaCLI helpers involve something loren ipsum
+ * @module balenaCLI helpers
+ */
+
 /* Copyright 2019 balena
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -27,6 +32,14 @@ module.exports = class CLI {
 		this.logger = logger;
 	}
 
+	/**
+	 * Preload the image
+	 *
+	 * @param {*} image
+	 * @param {*} options
+	 *
+	 * @category helper
+	 */
 	async preload(image, options) {
 		const socketPath = (await pathExists('/var/run/balena.sock'))
 			? '/var/run/balena.sock'
@@ -110,6 +123,15 @@ module.exports = class CLI {
 		});
 	}
 
+	/**
+	 * pushes stuff to the balenaCloud app
+	 *
+	 * @param {*} target
+	 * @param {*} options
+	 * @returns
+	 *
+	 * @category helper
+	 */
 	push(target, options) {
 		this.logger.log('Performing local push');
 		return exec(
@@ -117,11 +139,28 @@ module.exports = class CLI {
 		);
 	}
 
+	/**
+	 * asdsadasd
+	 *
+	 * @param {*} token
+	 * @returns
+	 *
+	 * @category helper
+	 */
 	loginWithToken(token) {
 		this.logger.log('Login CLI');
 		return exec(`balena login --token ${token}`);
 	}
 
+	/**
+	 *
+	 *
+	 * @param {*} target
+	 * @param {*} service
+	 * @returns
+	 *
+	 * @category helper
+	 */
 	logs(target, service) {
 		return exec(
 			`balena logs ${target} ${service ? '--service' + service : ''}`,

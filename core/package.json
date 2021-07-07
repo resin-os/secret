@@ -3,7 +3,7 @@
 		"prettify": "prettier --config ../.prettierrc --write \"{lib,tests}/**/*.js\"",
 		"lint": "eslint -c ../.eslintrc.* lib tests",
 		"start": "node lib/main.js",
-		"docs": "npx typedoc --tsconfig tsconfig.json"
+		"docs": "rimraf docs/ && npx typedoc --tsconfig tsconfig.json"
 	},
 	"dependencies": {
 		"ajv": "^6.5.0",
@@ -50,6 +50,7 @@
 		"eslint-plugin-promise": "^3.6.0",
 		"eslint-plugin-standard": "^3.0.1",
 		"prettier": "^1.19.1",
+		"rimraf": "^3.0.2",
 		"typedoc": "^0.21.2",
 		"typedoc-plugin-pages-fork": "0.0.1",
 		"typescript": "^4.3.4"

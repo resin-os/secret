@@ -1,3 +1,9 @@
+/**
+ * Utility helpers involve something loren ipsum
+ *
+ * @module Leviathan Utility helpers
+ */
+
 /*
  * Copyright 2017 balena
  *

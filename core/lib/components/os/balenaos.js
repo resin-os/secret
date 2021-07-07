@@ -1,3 +1,39 @@
+/**
+ * The `BalenaOS` helper class can be used to configure and unpack the OS image that you will use in the test. This allows you to inject config options and network credentials into your image.
+ *
+ * ```js
+ * const network_conf = {
+ *    ssid: SSID,
+ *    psk: PASSWORD,
+ *    nat: true,
+ * }
+ *
+ * const os = new BalenaOS(
+ *   {
+ *      deviceType: DEVICE_TYPE_SLUG,
+ *      network: network_conf,
+ *      configJson: {
+ *          uuid: UUID,
+ *          persistentLogging: true
+ *      }
+ *   },
+ *   this.getLogger()
+ * );
+ * await os.fetch()
+ * await os.configure()
+ * ```
+ *
+ * Alternatively, you can use the CLI to perform these functions - the CLI is imported in the testing environment:
+ *
+ * ```js
+ * await exec(`balena login --token ${API_KEY}`)
+ * await exec(`balena os configure ${PATH_TO_IMAGE} --config-network wifi --config-wifi-key ${PASSWORD}
+ * --config-wifi-ssid ${SSID}`);
+ * ```
+ *
+ * @module balenaOS helpers
+ */
+
 /*
  * Copyright 2017 balena
  *
@@ -91,7 +127,9 @@ async function isGzip(filePath) {
 }
 
 function id() {
-	return `${Math.random().toString(36).substring(2, 10)}`;
+	return `${Math.random()
+		.toString(36)
+		.substring(2, 10)}`;
 }
 
 module.exports = class BalenaOS {
@@ -103,7 +141,7 @@ module.exports = class BalenaOS {
 		this.network = options.network;
 		this.image = {
 			input: options.image || config.get('leviathan.uploads').image,
-			path: join(config.get('leviathan.downloads'), `image-${id()}`)
+			path: join(config.get('leviathan.downloads'), `image-${id()}`),
 		};
 		this.configJson = options.configJson || {};
 		this.contract = {
