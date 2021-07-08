@@ -55,8 +55,10 @@ module.exports = class Worker {
 	}
 
 	/**
-	 *
-	 * @param {*} imagePath
+	 * Flash the provided OS image onto the DUT
+	 * 
+	 * @param {*} imagePath path of the image to be flashed onto the DUT
+	 * @category helper
 	 */
 	async flash(imagePath) {
 		this.logger.log('Preparing to flash');
@@ -127,9 +129,6 @@ module.exports = class Worker {
 		await rp.post(`${this.url}/dut/off`);
 	}
 
-	/**
-	 * @internal
-	 */
 	async network(network) {
 		await rp.post({
 			uri: `${this.url}/dut/network`,
@@ -181,14 +180,22 @@ module.exports = class Worker {
 	}
 
 	/**
-	 * Another helpful method of the worker is `executeCommandInHostOs`, which lets you execute command line
-	 * operations in the host OS of the DUT. Assuming that the DUT is connected to the AP of the testbot:
+	 * Executes command-line operations in the host OS of the DUT. Assuming the DUT is 
+	 * connected to the access point broadcasted by the testbot:
 	 *
+	 * @example
 	 * ```js
 	 * const Worker = this.require('common/worker');
 	 * const worker = new Worker(DEVICE_TYPE_SLUG, this.getLogger())
 	 * await worker.executeCommandInHostOS('cat /etc/hostname', `${UUID}.local`);
 	 * ```
+	 * 
+	 * @param {string} command command to be executed on the DUT
+	 * @param {string} target local UUID of the DUT, example:`${UUID}.local`
+	 * @param {{"interval": number, "tries": number}} timeout object containing details of how many times the 
+	 * command needs to be retried and the intervals between each command execution
+	 * @returns {string} Output of the command that was exected on hostOS of the DUT
+	 * @category helper
 	 */
 	async executeCommandInHostOS(
 		command,
@@ -228,12 +235,13 @@ module.exports = class Worker {
 	}
 
 	/**
-	 * Use cli to push container
+	 * Pushes a release to an application from a given directory for unmanaged devices
 	 *
-	 * @param {*} target
-	 * @param {*} source
-	 * @param {*} containerName
-	 * @returns
+	 * @param {string} target  the <UUID> for the target device
+	 * @param {string} source The path to the directory containing the docker-compose/Dockerfile for the containers
+	 * @param {string} containerName The name of the container to verify is push has succeeded.
+	 * @returns {string} returns state of the device 
+	 * @category helper
 	 */
 	async pushContainerToDUT(target, source, containerName) {
 		await retry(
@@ -263,11 +271,12 @@ module.exports = class Worker {
 	}
 
 	/**
-	 *
-	 * @param {*} command
-	 * @param {*} containerName
-	 * @param {*} target
-	 * @returns
+	 * Executes the command in the targeted container of a device
+	 * @param {string} command The command to be executed
+	 * @param {string} containerName The name of the service/container to run the command in
+	 * @param {*} target The `<UUID.local>` of the target device
+	 * @returns {string} output of the command that is executed on the targetted container of the device
+	 * @category helper
 	 */
 	async executeCommandInContainer(command, containerName, target) {
 		// get container ID
@@ -285,8 +294,10 @@ module.exports = class Worker {
 	}
 
 	/**
-	 *
-	 * @param {*} target
+	 * Triggers a reboot on the target device and waits until the device comes back online
+	 * 
+	 * @param {string} target
+	 * @category helper
 	 */
 	async rebootDut(target) {
 		this.logger.log(`Rebooting the DUT`);
@@ -306,9 +317,11 @@ module.exports = class Worker {
 	}
 
 	/**
-	 *
-	 * @param {*} target
-	 * @returns
+	 * Fetches OS version available on the DUT's `/etc/os-release` file
+	 *  
+	 * @param {string} target
+	 * @returns {string} returns OS version
+	 * @category helper
 	 */
 	async getOSVersion(target) {
 		// maybe https://github.com/balena-io/leviathan/blob/master/core/lib/components/balena/sdk.js#L210

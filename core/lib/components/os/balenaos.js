@@ -1,4 +1,6 @@
 /**
+ * # balenaOS helpers
+ * 
  * The `BalenaOS` helper class can be used to configure and unpack the OS image that you will use in the test. This allows you to inject config options and network credentials into your image.
  *
  * ```js
@@ -153,7 +155,11 @@ module.exports = class BalenaOS {
 		this.releaseInfo = { version: null, variant: null };
 	}
 
-	// calling the fetch method will prepare the image to be used - either unzipping it or moving it to the working directory
+	/**
+	 * Prepares the received image/artifact to be used - either unzipping it or moving it to the Leviathan working directory
+	 * 
+	 * @remark Leviathan creates a temporary working directory that can referenced using `config.get('leviathan.downloads')`
+	 */
 	async fetch() {
 		this.logger.log(`Unpacking the file: ${this.image.input}`);
 		const unpack = await isGzip(this.image.input);
@@ -169,6 +175,10 @@ module.exports = class BalenaOS {
 		}
 	}
 
+	/**
+	 * Parses version and variant from balenaOS images
+	 * @param {string} image 
+	 */
 	async readOsRelease(image = this.image.path) {
 		const readVersion = async (pattern, field) => {
 			this.logger.log(`Checking ${field} in os-release`);
@@ -220,6 +230,10 @@ module.exports = class BalenaOS {
 		assignIn(this.configJson, configJson);
 	}
 
+	/**
+	 * Configures balenaOS image with specifc configuration (if provided), and injects required network configuration
+	 * @category helper
+	 */
 	async configure() {
 		this.readOsRelease();
 		this.logger.log(`Configuring balenaOS image: ${this.image.input}`);

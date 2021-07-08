@@ -8,7 +8,7 @@
 > A distributed testing framework for hardware 
 ## Getting Started
 
-To set up Leviathan both hardware and software need to be configured. If you are setting up your standalone testbot, then please follow the instructions given below carefully before running tests on the Device Under Test (DUT). 
+To set up Leviathan both hardware and software need to be configured. If you are setting up your standalone testbot, then please follow the instructions given below carefully before running tests on the Device Under Test (DUT).
 
 ### Clone the repository
 
@@ -43,6 +43,15 @@ balena push <appname>
 ```
 
 To monitior leviathan tests connected to its pipeline for the rigs, you would need to request Jenkins access.
+
+## Documentation for Leviathan Helpers
+
+Documentation for Leviathan helpers can be found on https://balena-os.github.io/leviathan
+To generate the documentation, run the following command from either the root of the repository or the `core` directory.
+
+```
+npm run docs
+```
 
 ## Support
 

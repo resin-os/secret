@@ -69,6 +69,14 @@ module.exports = class BalenaSDK {
 		this.logger = logger;
 	}
 
+	/**
+	 * Executes command-line operations in the host OS of the DUT. Assuming the DUT is a managed device.
+	 * 
+	 * @param {string} command command to be executed on the DUT
+	 * @param {string} device local UUID of the DUT, example:`${UUID}.local`
+	 * @param {{"interval": number, "tries": number}} timeout object containing details of how many times the command needs to be retried and the intervals between each command execution
+	 * @returns {string} Output of the command that was exected on hostOS of the DUT
+	 */
 	async executeCommandInHostOS(
 		command,
 		device,
@@ -448,9 +456,11 @@ module.exports = class BalenaSDK {
 		);
 	}
 
-	/** Pushes a release to an application, from a given directory
-	 * @param The balena application name to push the release to
-	 * @param The path to the directory containing the docker-compose/Dockerfile for the application and the source files
+	/** 
+	 * Pushes a release to an application from a given directory for managed devices
+	 * @param {string} application The balena application name to push the release to
+	 * @param {string} directory The path to the directory containing the docker-compose/Dockerfile for the application and the source files
+	 * @returns {string} returns release commit after `balena push` is complete
 	 */
 	async pushReleaseToApp(application, directory) {
 		await exec(`balena push ${application} --source ${directory}`);
@@ -461,11 +471,14 @@ module.exports = class BalenaSDK {
 
 		return commit;
 	}
-	/** Waits until given services are all running on a device, on a given commit
-	 * @param The UUID of the device
-	 * @param An array of the service names
-	 * @param The release commit hash that services should be on
-	 * @param (optional) The number of attemps to retry. Retries are spaced 30s apart
+
+	/**
+	 * Waits until all given services are running on the device on the provided commit
+	 * @param {string} uuid The UUID of the device
+	 * @param {Array[string]} services An array of the service names
+	 * @param {string} commit The release commit hash that services should be on
+	 * @param {number} __times (optional) The number of attemps to retry. Retries are spaced 30s apart
+	 * @returns {boolean} returns true if all services in the release commit are running on the device
 	 */
 	async waitUntilServicesRunning(uuid, services, commit, __times = 50) {
 		await utils.waitUntil(
@@ -487,10 +500,12 @@ module.exports = class BalenaSDK {
 		);
 	}
 
-	/** Executes the command in the targetted container of a device
-	 * @param The command to be run
-	 * @param The name of the service/container to run the command in
-	 * @param The UUID of the device
+	/**
+	 * Executes the command in the targetted container of a device
+	 * @param {string} command The command to be executed
+	 * @param {string} containerName The name of the service/container to run the command in
+	 * @param {string} uuid The UUID of the target device
+	 * @returns {string} output of the command that is executed on the targetted container of the device
 	 */
 	async executeCommandInContainer(command, containerName, uuid) {
 		// get the container ID of container through balena engine
@@ -506,11 +521,13 @@ module.exports = class BalenaSDK {
 
 		return stdout;
 	}
-	/** Checks if device logs contain a string
-	 * @param The UUID of the device
-	 * @param The string to look for in the logs
-	 * @param (optional) start the search from this log
-	 * @param (optional) end the search at this log
+
+	/**
+	 * @param {string} uuid The UUID of the target device
+	 * @param {string} contains The string to look for in the logs
+	 * @param {number} _start (optional) start the search from this log
+	 * @param {number} _end (optional) end the search at this log
+	 * @returns {boolean} If device logs contain the string
 	 */
 	async checkLogsContain(uuid, contains, _start = null, _end = null) {
 		let logs = await this.balena.logs.history(uuid).map(log => {
@@ -531,8 +548,9 @@ module.exports = class BalenaSDK {
 		return pass;
 	}
 
-	/** Returns the supervisor version on a device
-	 * @param The UUID of the device
+	/**
+	 * @param {string} uuid UUID of the device
+	 * @returns {Promise<string>} Returns the supervisor version on a device
 	 */
 	async getSupervisorVersion(uuid) {
 		let checkName = await this.executeCommandInHostOS(
@@ -551,9 +569,13 @@ module.exports = class BalenaSDK {
 		return supervisor;
 	}
 
-	/** Downloads provided version of balenaOS using balenaSDK
+	/** 
+	 * Downloads provided version of balenaOS for the provided deviceType using balenaSDK
+	 * 
 	 * @param version The semver compatible balenaOS version that will be downloaded, example: `2.80.3+rev1.dev`. Default value: `latest` where latest development variant of balenaOS will be downloaded.
 	 * @param deviceType The device type for which balenaOS needs to be downloaded
+	 * @remark Stores the downloaded image in `leviathan.downloads` directory,
+	 * @throws Rejects promise if download fails. Retries thrice to download an image before giving up.
 	 */
 	async fetchOS(version = 'latest', deviceType) {
 		if (version === 'latest') {

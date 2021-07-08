@@ -1,3 +1,9 @@
+/**
+ * # Helpers to test balena git workflows 
+ * 
+ * @module balena git helpers 
+ */
+
 /*
  * Copyright 2019 balena
  *

@@ -1,5 +1,5 @@
 /**
- * Utility helpers involve something loren ipsum
+ * ## [Deprecated] Sync functionality
  *
  * @module Sync helper
  */

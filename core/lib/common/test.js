@@ -1,5 +1,5 @@
 /**
- * balenaOS helpers involve something loren ipsum
+ * # Basic Test logic for Leviathan tests
  *
  * @module Test
  */

@@ -1,5 +1,7 @@
 /**
- * Utility helpers involve something loren ipsum
+ * # Utility helpers
+ *
+ * The module contains helpers to better write tests.
  *
  * @module Leviathan Utility helpers
  */
@@ -74,6 +76,14 @@ const getSSHClientDisposer = config => {
 };
 
 module.exports = {
+	/**
+	 * This is the base hostOS execution command used by many other functions like `executeCommandIntoHostOs` to
+	 * execute commands on the DUT being passed through SSH.
+	 *
+	 * @param {string} command The command to be executed over SSH
+	 * @param {*} config
+	 * @category helper
+	 */
 	executeCommandOverSSH: async (command, config) => {
 		return Bluebird.using(getSSHClientDisposer(config), client => {
 			return new Bluebird(async (resolve, reject) => {
@@ -88,6 +98,18 @@ module.exports = {
 			});
 		});
 	},
+
+	/**
+	 * @param {string} promise The command you need to wait for
+	 * @param {boolean} rejectionFail Whether the `waitUntil()` function error out, if a iteration fails once.
+	 * Defaults to `false`, which results in `waitUntil()` not failing as it iterates and wait for the condition
+	 * to satisfy.
+	 * @param {number} _times Specify how many times should the command be executed
+	 * @param {number} _delay Specify the delay between each iteration of the command execution
+	 * @throws error on first iteration if`rejectionFail` is true. Otherwise throws error after iterating through
+	 * the specified `_times` parameter
+	 * @category helper
+	 */
 	waitUntil: async (
 		promise,
 		rejectionFail = true,
