@@ -1,5 +1,5 @@
 /**
- * ## [Deprecated] Sync functionality
+ * ## [Deprecated] Helpers for Sync functionality
  *
  * @module Sync helper
  */

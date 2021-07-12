@@ -60,12 +60,17 @@ module.exports = class Context {
 	 *    }
 	 * })
 	 *
-	 * @param {*} obj
+	 * @param {object} obj
+	 * @category helper
 	 */
 	set(obj) {
 		merge(this.ctx, obj);
 	}
 
+	/**
+	 * Method to fetch objects added to the context from suites and tests.
+	 * @category helper
+	 */
 	get() {
 		if (this.global != null) {
 			return { ...this.global.get(), ...this.ctx };

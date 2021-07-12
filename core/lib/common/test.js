@@ -1,5 +1,5 @@
 /**
- * # Basic Test logic for Leviathan tests
+ * # Test logic for Leviathan tests
  *
  * @module Test
  */

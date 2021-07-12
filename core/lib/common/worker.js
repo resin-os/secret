@@ -55,9 +55,10 @@ module.exports = class Worker {
 	}
 
 	/**
-	 * Flash the provided OS image onto the DUT
-	 * 
-	 * @param {*} imagePath path of the image to be flashed onto the DUT
+	 * Flash the provided OS image onto the connected DUT
+	 *
+	 * @param {string} imagePath path of the image to be flashed onto the DUT
+	 *
 	 * @category helper
 	 */
 	async flash(imagePath) {
@@ -114,6 +115,8 @@ module.exports = class Worker {
 
 	/**
 	 * Turn the DUT on
+	 *
+	 * @category helper
 	 */
 	async on() {
 		this.logger.log('Powering on DUT');
@@ -123,6 +126,8 @@ module.exports = class Worker {
 
 	/**
 	 * Turn the DUT off
+	 *
+	 * @category helper
 	 */
 	async off() {
 		this.logger.log('Powering off DUT');
@@ -180,7 +185,7 @@ module.exports = class Worker {
 	}
 
 	/**
-	 * Executes command-line operations in the host OS of the DUT. Assuming the DUT is 
+	 * Executes command-line operations in the host OS of the DUT. Assuming the DUT is
 	 * connected to the access point broadcasted by the testbot:
 	 *
 	 * @example
@@ -189,12 +194,13 @@ module.exports = class Worker {
 	 * const worker = new Worker(DEVICE_TYPE_SLUG, this.getLogger())
 	 * await worker.executeCommandInHostOS('cat /etc/hostname', `${UUID}.local`);
 	 * ```
-	 * 
+	 *
 	 * @param {string} command command to be executed on the DUT
 	 * @param {string} target local UUID of the DUT, example:`${UUID}.local`
-	 * @param {{"interval": number, "tries": number}} timeout object containing details of how many times the 
+	 * @param {{"interval": number, "tries": number}} timeout object containing details of how many times the
 	 * command needs to be retried and the intervals between each command execution
 	 * @returns {string} Output of the command that was exected on hostOS of the DUT
+	 *
 	 * @category helper
 	 */
 	async executeCommandInHostOS(
@@ -240,7 +246,8 @@ module.exports = class Worker {
 	 * @param {string} target  the <UUID> for the target device
 	 * @param {string} source The path to the directory containing the docker-compose/Dockerfile for the containers
 	 * @param {string} containerName The name of the container to verify is push has succeeded.
-	 * @returns {string} returns state of the device 
+	 * @returns {string} returns state of the device
+	 *
 	 * @category helper
 	 */
 	async pushContainerToDUT(target, source, containerName) {
@@ -295,7 +302,7 @@ module.exports = class Worker {
 
 	/**
 	 * Triggers a reboot on the target device and waits until the device comes back online
-	 * 
+	 *
 	 * @param {string} target
 	 * @category helper
 	 */
@@ -318,7 +325,7 @@ module.exports = class Worker {
 
 	/**
 	 * Fetches OS version available on the DUT's `/etc/os-release` file
-	 *  
+	 *
 	 * @param {string} target
 	 * @returns {string} returns OS version
 	 * @category helper

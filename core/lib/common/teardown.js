@@ -1,5 +1,5 @@
 /**
- * # Teardowns
+ * # Teardown
  *
  * You can register functions to be carried out upon "teardown" of the suite or test. These will
  * execute when the test ends, regardless of passing or failing:

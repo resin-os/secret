@@ -1,4 +1,6 @@
-# Quick start guide for leviathan
+# [Deprecated] Quick start guide for leviathan
+
+> This guide has been split into multiple pages in the same folder. You can read more about Leviathan from there. 
 
 This is a quick start guide for using the leviathan remote testing framework, with a testbot. As a prerequisite for this guide, you will have to prepare your testbot, using the following [guide](https://github.com/balena-io/testbot-hardware/blob/master/documentation/getting-started.md).
 

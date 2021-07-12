@@ -7,6 +7,7 @@ module.exports = {
         networkWired: false,
         networkWireless: true,
         interactiveTests: false,
+        downloadVersion: 'latest',
         balenaApiKey: process.env.BALENACLOUD_API_KEY,
         balenaApiUrl: 'balena-cloud.com',
         organization: process.env.BALENACLOUD_ORG
@@ -29,6 +30,7 @@ Information on properties in `config.js`:
 - `organization` is the balenaCloud organizations where test applications are created. Ideally, you can add it as an environment variable and reference it with `process.env.BALENACLOUD_ORG`.
 - `image` is the absolute path to the balenaOS image that is flashed onto the Device Under Test (DUT). The image should be kept under the `workspace` directory. The path after `__dirname` in the config is a path relative to the workspace directory. Make sure to rename the image to balena.img. If you provide `balena.img` as your balenaOS image, then Leviathan will compress it for you in `gz` format. We recommend compressing beforehand, as it saves time.  
 - `workers` is the property where we specify precisely on which testbots the test suites will be executed on. You can specify this in multiple ways as per the requirement. 
+- `downloadVersion`: If you intend to download a balenaOS version for your tests, then you can use this property to specify the balenaOS version semver. The `fetchOS` helper will find and download the balenaOS image. To find the implementation, check https://github.com/balena-os/leviathan/blob/556ae5b52aacc28e72c42ca20413ed0e742126b3/core/lib/components/balena/sdk.js#L557 
 
 *Deprecated Properties*
 
@@ -60,9 +62,7 @@ workers: {
 ### `config.js` Examples
 
 Following is an exhaustive list of config.js examples which can be used for reference
-
-<details>
-  <summary>Running 3 test suites using workers objects (Click to expand)</summary>
+#### Running 3 test suites using workers objects
 
 ```js
 module.exports = [{
@@ -88,6 +88,7 @@ module.exports = [{
         config: {
             networkWired: false,
             networkWireless: true,
+            downloadVersion: 'latest',
             interactiveTests: false,
             balenaApiKey: process.env.BALENACLOUD_API_KEY,
             balenaApiUrl: 'balena-cloud.com',
@@ -101,7 +102,7 @@ module.exports = [{
     },
     {
         deviceType: "raspberrypi3",
-        suite: `${__dirname}/../suites/release`,
+        suite: `${__dirname}/../suites/cloud`,
         config: {
             networkWired: false,
             networkWireless: true,
@@ -117,10 +118,9 @@ module.exports = [{
         }
     }]
 ```
-</details>
 
-<details>
-  <summary>Running 2 test suites on workers array containing Public URLs (Click to expand)</summary>
+
+#### Running 2 test suites on workers array containing Public URLs
 
 ```js
 module.exports = [{
@@ -152,6 +152,5 @@ module.exports = [{
         workers: ['https://123213bda32048sgd5dfw223423723324.balena-devices.com/']
     }]
 ```
-</details>
 
 `config.js` files are validated using this [schema](https://github.com/balena-os/leviathan/blob/master/client/lib/schemas/multi-client-config.js). Some properties are optional with the ability to add new properties as required. After adding data to config.js, the properties will be available throughout the execution of the test suite.

@@ -1,7 +1,9 @@
 /**
- * # Helpers to test balena git workflows 
- * 
- * @module balena git helpers 
+ * # Helpers to test balena git workflows
+ *
+ * git workflows are considered legacy and not tested.
+ *
+ * @module balena git helpers
  */
 
 /*

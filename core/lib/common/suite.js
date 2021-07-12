@@ -1,5 +1,5 @@
 /**
- * # The test suites lifecycle including node-tap
+ * # Test suites lifecycle (with node-tap)
  *
  * Contains code to parse, prepare, execute, monitor and teardown test suites and their tests that
  * are queued up for testing as per the configuration.

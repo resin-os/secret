@@ -47,12 +47,19 @@ To monitior leviathan tests connected to its pipeline for the rigs, you would ne
 ## Documentation for Leviathan Helpers
 
 Documentation for Leviathan helpers can be found on https://balena-os.github.io/leviathan
-To generate the documentation, run the following command from either the root of the repository or the `core` directory.
+To generate the documentation, run the following command from either the root of the repository or the `core` directory. 
 
 ```
 npm run docs
 ```
 
+If the docs are generated successfully, you will be getting the success line as:
+
+```
+Info: Documentation generated at /path/to/documentation
+```
+
+Head there to find the documentation by double clicking the index.html page
 ## Support
 
 If you're having any problem, please [raise an issue][newissue] on GitHub and the balena team will be happy to help.

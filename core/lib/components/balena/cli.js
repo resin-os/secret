@@ -1,5 +1,30 @@
 /**
- * balenaCLI helpers involve something loren ipsum
+ * # balenaCLI helpers
+ *
+ * balenaCLI helpers performs frequently executed tasks in order to keep things DRY.
+ * For one-off commands, it's recommended to not use the helpers and instead directly use the
+ * balenaCLI with the example explained below.
+ *
+ * @example The core service where the test suites run already has balenaCLI installed. There is no need to
+ * initalise the `CLI` class to run/execute any CLI command inside the tests. Instead use
+ *
+ * ```js
+ * const { exec } = require("child_process");
+ * await exec(`balena push joystart --source .`)
+ * ```
+ *
+ * To get output from the commands being exectued, use the callback
+ *
+ * ```js
+ * const { exec } = require("child_process");
+ * await exec(`balena logs alliance-fleet --service "normandy-sr0"`, (error, stdout, stderr) => {
+ *   if (error) {
+ *     throw new error
+ *   }
+ *   console.log(stdout)
+ * })
+ * ```
+ *
  * @module balenaCLI helpers
  */
 
@@ -33,10 +58,10 @@ module.exports = class CLI {
 	}
 
 	/**
-	 * Preload the image
+	 * Preload the image onto the target image
 	 *
-	 * @param {*} image
-	 * @param {*} options
+	 * @param {string} image path to the image
+	 * @param {*} options options to be executed with balena preload command
 	 *
 	 * @category helper
 	 */
@@ -124,11 +149,10 @@ module.exports = class CLI {
 	}
 
 	/**
-	 * pushes stuff to the balenaCloud app
+	 * Pushes application to local device locally
 	 *
-	 * @param {*} target
-	 * @param {*} options
-	 * @returns
+	 * @param {string} target The address/uuid of the device
+	 * @param {*} options Options to be executed with balena preload command
 	 *
 	 * @category helper
 	 */
@@ -140,10 +164,7 @@ module.exports = class CLI {
 	}
 
 	/**
-	 * asdsadasd
-	 *
-	 * @param {*} token
-	 * @returns
+	 * @param {string} token Session key or API token required for the authentication of balena-cli session
 	 *
 	 * @category helper
 	 */
@@ -153,11 +174,9 @@ module.exports = class CLI {
 	}
 
 	/**
-	 *
-	 *
-	 * @param {*} target
-	 * @param {*} service
-	 * @returns
+	 * @param {string} target The address/UUID of the target device
+	 * @param {string} service The container/service for which logs are needed
+	 * @returns {string} logs of the service/container running on the target device
 	 *
 	 * @category helper
 	 */
