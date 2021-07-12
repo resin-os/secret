@@ -10,10 +10,12 @@ import {
 	getRuntimeConfiguration,
 	resolveLocalTarget,
 } from './helpers';
+import { ManualWorker } from './workers/manual';
 import { TestBotWorker } from './workers/testbot';
 
-const workersDict: Dictionary<typeof TestBotWorker> = {
+const workersDict: Dictionary<typeof TestBotWorker | typeof ManualWorker> = {
 	testbot_hat: TestBotWorker,
+	manual: ManualWorker,
 };
 
 async function setup(): Promise<express.Application> {
