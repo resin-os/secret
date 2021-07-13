@@ -50,6 +50,7 @@ Documentation for Leviathan helpers can be found on https://balena-os.github.io/
 To generate the documentation, run the following command from either the root of the repository or the `core` directory. 
 
 ```
+npm install
 npm run docs
 ```
 
