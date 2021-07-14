@@ -563,21 +563,23 @@ module.exports = class BalenaSDK {
 
 		const path = join(config.get('leviathan.downloads'), `balenaOs-${version}.img`);
 
-		// Caching implmentation in progress - Not yet complete
-		// glob("/data/images/balenaOs-*.img", (err, files) => {
+		// Caching implmentation if needed - Check https://github.com/balena-os/leviathan/issues/441
+		// // Step 1: Find previously download balenaOS images in the Downlaods directory
+		// glob(config.get('leviathan.downloads') + "balenaOs-*.img", (err, files) => {
 		// 	if (err) {
 		// 		throw err
 		// 	}
-		// 	console.log(files)
 		// 	files.forEach(async (file) => {
 		// 		try {
-		// 			console.log(`file found is ${file}`)
-		// 			await this.context.get().os.readOsRelease(file)
-		// 			let versionAvailable = await this.context.get().os.contract.version
+		//			// Step 2: For each balenaOS image, we check and extract semver version using readOsRelease method
+		//			// There is a step missing here with os class not being initialised for the image being checked.
+		//			// Create an object of the os helpers class and use the readOsRelease() method to extract balenaOS version
+		// 			let versionAvailable = await this.context.get().os.readOsRelease(file)
 		// 			console.log(`verion found in the file is ${versionAvailable}`)
 
 		// 			/**
-		// 			 * Returns 0 if versionA == versionB, or
+		//			 * Using balena-semver, we compare versions and figure out if we need to download a new image or we already have one available in cache. 
+		// 			 * The if condition returns 0 if versionA == versionB, or
 		// 			 * 1 if versionA is greater, or
 		// 			 * -1 if versionB is greater.
 		// 			 * https://github.com/balena-io-modules/balena-semver#compareversiona-versionb--number
