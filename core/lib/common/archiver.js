@@ -13,7 +13,7 @@
  *
  * Using this method, at the end of the test, any artifacts added to the archive are compressed and
  * downloaded by the client. These are available in the `workspace/reports` directory at the end of
- * the test. This can also be helpful when storing diagigggddddd
+ * the test. This can also be helpful when storing artifacts/reports/logs after a test suite run.
  *
  * @module Archiver
  */

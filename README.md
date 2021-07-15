@@ -23,7 +23,7 @@ To set up Leviathan both hardware and software need to be configured. If you are
 ### Configuration needed
 
 - Start building your standalone testbot by [following the guide](https://github.com/balena-io/testbot/blob/master/documentation/getting-started.md#quick-start-guide-for-testbot). 
-- Create your test configuration, by creating a `config.json` file in the `workspace` directory, following instructions mentioned in the [leviathan docs](https://github.com/balena-io/testbot/blob/master/documentation/getting-started.md#run-your-first-test).
+- Create your test configuration, by creating a `config.json` file in the `workspace` directory, following instructions mentioned in the [leviathan docs](https://github.com/balena-io/testbot/blob/master/documentation/quickstart.md).
 - Extract the image you want to test to `./leviathan/workspace` and rename it to `balena.img` 
 
 ### Running tests

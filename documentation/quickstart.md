@@ -28,7 +28,15 @@ module.exports = {
 };
 ```
 
-- The tests in Leviathan are deprecated, hence use the tests from [meta-balena](https://github.com/balena-os/meta-balena/tree/master/tests/suites) instead. OS test suite is recommended as it works with the least configuration.
-- If you are running the OS test suite, downloading the image you want to test on your DUT from [balena.io/os](balena.io/os).Extract the image to `./leviathan/workspace` and rename it to `balena.img`. 
+- Use the tests from [meta-balena](https://github.com/balena-os/meta-balena/tree/master/tests/suites) instead. OS test suite is recommended as it works with the least configuration. Either copy the OS test suite to the `suite` property path as mentioned in config.js or point the `suite` property to the path of the OS test suite.
+- Extract the image you want to test to `./leviathan/workspace` and rename it to `balena.img`. You can downloaded unmanaged image from [balena.io/os](balena.io/os).
 - Run the `run-tests.sh` script from the `workspace` directory and watch the logs. 
 - At the end of the run, reports and logs about the test will be stored in `workspace/reports` directory.
+- With that, you have successfully completed your first test run.
+
+## Where do you go from here?
+
+1. Start by {@page Writing tests | writing your first test}.
+2. To know more about the config.js and it's properties, refer to {@page Config.js Reference | Config.js reference}.
+3. To understand the bigger picture about the project read/watch these {@page Links, and more links | resources}.
+4. Some tips and references for {@page Tips and Reference | writing better tests} with Leviathan.
